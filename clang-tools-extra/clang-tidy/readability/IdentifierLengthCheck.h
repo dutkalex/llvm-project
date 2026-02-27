@@ -42,6 +42,8 @@ private:
 
   std::string IgnoredParameterNamesInput;
   llvm::Regex IgnoredParameterNames;
+
+  const unsigned MinimumScopeLength;
 };
 
 } // namespace clang::tidy::readability

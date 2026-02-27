@@ -21,6 +21,7 @@ const char DefaultIgnoredLoopCounterNames[] = "^[ijk_]$";
 const char DefaultIgnoredVariableNames[] = "";
 const char DefaultIgnoredExceptionVariableNames[] = "^[e]$";
 const char DefaultIgnoredParameterNames[] = "^[n]$";
+const unsigned DefaultMinimumScopeLength = 1;
 
 const char ErrorMessage[] =
     "%select{variable|exception variable|loop variable|"
@@ -49,7 +50,8 @@ IdentifierLengthCheck::IdentifierLengthCheck(StringRef Name,
       IgnoredExceptionVariableNames(IgnoredExceptionVariableNamesInput),
       IgnoredParameterNamesInput(
           Options.get("IgnoredParameterNames", DefaultIgnoredParameterNames)),
-      IgnoredParameterNames(IgnoredParameterNamesInput) {}
+      IgnoredParameterNames(IgnoredParameterNamesInput),
+      MinimumScopeLength(Options.get("MinimumScopeLength", DefaultMinimumScopeLength)) {}
 
 void IdentifierLengthCheck::storeOptions(ClangTidyOptions::OptionMap &Opts) {
   Options.store(Opts, "MinimumVariableNameLength", MinimumVariableNameLength);
@@ -62,6 +64,7 @@ void IdentifierLengthCheck::storeOptions(ClangTidyOptions::OptionMap &Opts) {
   Options.store(Opts, "IgnoredExceptionVariableNames",
                 IgnoredExceptionVariableNamesInput);
   Options.store(Opts, "IgnoredParameterNames", IgnoredParameterNamesInput);
+  Options.store(Opts, "MinimumScopeLength", MinimumScopeLength);
 }
 
 void IdentifierLengthCheck::registerMatchers(MatchFinder *Finder) {
@@ -85,9 +88,17 @@ void IdentifierLengthCheck::registerMatchers(MatchFinder *Finder) {
         this);
 }
 
+template< typename VarKind >
+static bool isShortScoped(VarKind& Var){
+  return false;
+}
+
 void IdentifierLengthCheck::check(const MatchFinder::MatchResult &Result) {
   const auto *StandaloneVar = Result.Nodes.getNodeAs<VarDecl>("standaloneVar");
   if (StandaloneVar) {
+    if (isShortScoped(StandaloneVar))
+      return;
+
     if (!StandaloneVar->getIdentifier())
       return;
 
@@ -103,6 +114,9 @@ void IdentifierLengthCheck::check(const MatchFinder::MatchResult &Result) {
 
   auto *ExceptionVarName = Result.Nodes.getNodeAs<VarDecl>("exceptionVar");
   if (ExceptionVarName) {
+    if (isShortScoped(ExceptionVarName))
+      return;
+
     if (!ExceptionVarName->getIdentifier())
       return;
 
@@ -117,6 +131,9 @@ void IdentifierLengthCheck::check(const MatchFinder::MatchResult &Result) {
 
   const auto *LoopVar = Result.Nodes.getNodeAs<VarDecl>("loopVar");
   if (LoopVar) {
+    if (isShortScoped(LoopVar))
+      return;
+
     if (!LoopVar->getIdentifier())
       return;
 
@@ -132,6 +149,9 @@ void IdentifierLengthCheck::check(const MatchFinder::MatchResult &Result) {
 
   const auto *ParamVar = Result.Nodes.getNodeAs<VarDecl>("paramVar");
   if (ParamVar) {
+    if (isShortScoped(ParamVar))
+      return;
+
     if (!ParamVar->getIdentifier())
       return;
 
