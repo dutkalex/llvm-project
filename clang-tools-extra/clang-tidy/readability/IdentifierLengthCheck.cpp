@@ -21,7 +21,7 @@ const char DefaultIgnoredLoopCounterNames[] = "^[ijk_]$";
 const char DefaultIgnoredVariableNames[] = "";
 const char DefaultIgnoredExceptionVariableNames[] = "^[e]$";
 const char DefaultIgnoredParameterNames[] = "^[n]$";
-const unsigned DefaultMinimumScopeLength = 1;
+const unsigned DefaultMinimumScopeLength = 0;
 
 const char ErrorMessage[] =
     "%select{variable|exception variable|loop variable|"
