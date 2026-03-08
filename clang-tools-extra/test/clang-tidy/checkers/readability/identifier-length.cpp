@@ -1,6 +1,6 @@
 // RUN: %check_clang_tidy %s readability-identifier-length %t \
 // RUN: -config='{CheckOptions: \
-// RUN:  {readability-identifier-length.IgnoredVariableNames: "^[xy]$", readability-identifier-length.MinimumScopeLength: 1}}' \
+// RUN:  {readability-identifier-length.IgnoredVariableNames: "^[xy]$", readability-identifier-length.LineCountThreshold: 1}}' \
 // RUN: -- -fexceptions
 
 struct myexcept {
@@ -63,7 +63,7 @@ void longEnoughVariableNames(int n, int m) // argument 'n' ignored by default co
     doIt(e);
   } catch (const myexcept &ex) {
     doIt(ex);
-  } catch (const simpleexcept &d) { doIt(d); } // 'd' is only used on this line
+  } catch (const int &d) { doIt(d); } // 'd' is only used on this line
 
   int x = 5; // ignored by configuration
   ++x;
