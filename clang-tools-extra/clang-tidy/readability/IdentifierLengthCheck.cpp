@@ -88,15 +88,14 @@ void IdentifierLengthCheck::registerMatchers(MatchFinder *Finder) {
         this);
 }
 
-template< typename VarKind >
-static bool isShortScoped(VarKind& Var){
+static bool scopeIsShortEnough(const VarDecl* Var){
   return false;
 }
 
 void IdentifierLengthCheck::check(const MatchFinder::MatchResult &Result) {
   const auto *StandaloneVar = Result.Nodes.getNodeAs<VarDecl>("standaloneVar");
   if (StandaloneVar) {
-    if (isShortScoped(StandaloneVar))
+    if (scopeIsShortEnough(StandaloneVar))
       return;
 
     if (!StandaloneVar->getIdentifier())
@@ -114,7 +113,7 @@ void IdentifierLengthCheck::check(const MatchFinder::MatchResult &Result) {
 
   auto *ExceptionVarName = Result.Nodes.getNodeAs<VarDecl>("exceptionVar");
   if (ExceptionVarName) {
-    if (isShortScoped(ExceptionVarName))
+    if (scopeIsShortEnough(ExceptionVarName))
       return;
 
     if (!ExceptionVarName->getIdentifier())
@@ -131,7 +130,7 @@ void IdentifierLengthCheck::check(const MatchFinder::MatchResult &Result) {
 
   const auto *LoopVar = Result.Nodes.getNodeAs<VarDecl>("loopVar");
   if (LoopVar) {
-    if (isShortScoped(LoopVar))
+    if (scopeIsShortEnough(LoopVar))
       return;
 
     if (!LoopVar->getIdentifier())
@@ -149,7 +148,7 @@ void IdentifierLengthCheck::check(const MatchFinder::MatchResult &Result) {
 
   const auto *ParamVar = Result.Nodes.getNodeAs<VarDecl>("paramVar");
   if (ParamVar) {
-    if (isShortScoped(ParamVar))
+    if (scopeIsShortEnough(ParamVar))
       return;
 
     if (!ParamVar->getIdentifier())
