@@ -35,6 +35,9 @@ void tooShortVariableNames(int z)
   {
     doIt();
   }
+
+  auto [v] = std::tuple<int>{1};
+  // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: structured binding variable name 'v' is too short, expected at least 3 characters [readability-identifier-length]
 }
 
 void longEnoughVariableNames(int n) // argument 'n' ignored by default configuration
